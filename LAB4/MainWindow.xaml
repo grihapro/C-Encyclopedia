@@ -1,0 +1,254 @@
+﻿<Window x:Class="LAB4.MainWindow"
+        x:Name="MyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LAB4"
+        mc:Ignorable="d"
+        Icon="/Images/icon2.png"
+        Title="Справочник птиц" Height="450" Width="800">
+    <Window.Resources>
+        <ResourceDictionary>
+            <local:MultiConverter x:Key="MultiConverter"/>
+            <Style x:Key="PlaceholderTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TextBox}">
+                            <Border x:Name="border"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        SnapsToDevicePixels="True">
+                                <Grid>
+                                    <ScrollViewer x:Name="PART_ContentHost" />
+                                    <TextBlock x:Name="textBlock"
+                                   TextAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="2,0,0,0"
+                                   Foreground="{TemplateBinding BorderBrush}"
+                                   IsHitTestVisible="False"
+                                   Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Visibility="Collapsed" />
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter TargetName="textBlock" Property="Visibility" Value="Visible" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="border" Property="Opacity" Value="0.56" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#FF7EB4EA" />
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#FF569DE5" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="7*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <TreeView x:Name="MainTree" ItemsSource="{Binding Groups}" TreeViewItem.Selected="OnItemSelected" BorderThickness="1" Focusable="False">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Families}" DataType="{x:Type local:Family}">
+                            <Label Content="{Binding Name}"/>
+                            <HierarchicalDataTemplate.ItemTemplate>
+                                <HierarchicalDataTemplate ItemsSource="{Binding Genuses}" DataType="{x:Type local:Genus}">
+                                    <Label Content="{Binding Name}"/>
+                                    <HierarchicalDataTemplate.ItemTemplate>
+                                        <HierarchicalDataTemplate ItemsSource="{Binding Kinds}" DataType="{x:Type local:Kind}">
+                                            <Label Content="{Binding Name}"/>
+                                            <HierarchicalDataTemplate.ItemTemplate>
+                                                <DataTemplate DataType="{x:Type local:Kind}">
+                                                    <Label Content="{Binding Name}"/>
+                                                </DataTemplate>
+                                            </HierarchicalDataTemplate.ItemTemplate>
+                                        </HierarchicalDataTemplate>
+                                    </HierarchicalDataTemplate.ItemTemplate>
+                                </HierarchicalDataTemplate>
+                            </HierarchicalDataTemplate.ItemTemplate>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="Search" Content="Поиск" HorizontalAlignment="Stretch" Grid.Column="2" VerticalAlignment="Stretch" Tag="{Binding ElementName=Поиск, Path=Text}" Click="Hide"/>
+                <TextBox x:Name="Поиск" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Поиск!" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1"/>
+                <Image Source="/Images/search.png" Grid.Column="0"/>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1" x:Name="Grid1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Среда обитания" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="1" BorderBrush="Black" Grid.Column="0" VerticalAlignment="Stretch"/>
+                <Border BorderThickness="1" BorderBrush="Black" Grid.Column="1">
+                    <ScrollViewer>
+                        <TextBlock x:Name="Area" Margin="0,0,0,0" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding ElementName=MainTree, Path=SelectedItem.Area}" IsEnabled="False"/>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Content="Добавить" HorizontalAlignment="Stretch" Grid.Column="0" VerticalAlignment="Stretch" Click="InfoToAdd"/>
+                <Button Content="Удалить" HorizontalAlignment="Stretch" Grid.Column="1" VerticalAlignment="Stretch" Command="{Binding RemoveCommand}"/>
+            </Grid>
+            <Border BorderThickness="1" BorderBrush="Black" Grid.Row="2">
+                <ScrollViewer>
+                    <TextBlock x:Name="Description" HorizontalAlignment="Center" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding ElementName=MainTree, Path=SelectedItem.Description}"/>
+                </ScrollViewer>
+            </Border>
+            <Image x:Name="Image" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="0"  VerticalAlignment="Stretch" Source="{Binding SelectedItem.Path, ElementName=MainTree}"/>
+            <Button Content="Редактировать" HorizontalAlignment="Stretch" Grid.Row="3" VerticalAlignment="Stretch" Command="{Binding ChooseCommand}"/>
+        </Grid>
+        <Grid Grid.Column="1" x:Name="Grid2" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Border BorderBrush="Black" BorderThickness="1">
+                    <TextBlock  VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center">
+                            <Run Text="Отряд"/>
+                            <Run Text="&#10;Обязательное поле!" Foreground="Red"/>
+                    </TextBlock>
+                </Border>
+                <TextBox x:Name="Группа" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" BorderBrush="Black"/>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Border BorderBrush="Black" BorderThickness="1">
+                    <TextBlock  VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="Семейство"/>
+                        <Run Text="&#10;Обязательное поле!" Foreground="Red"/>
+                    </TextBlock>
+                </Border>
+                <TextBox x:Name="Семейство" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" BorderBrush="Black"/>
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Border BorderBrush="Black" BorderThickness="1">
+                    <TextBlock  VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="Род"/>
+                        <Run Text="&#10;Обязательное поле!" Foreground="Red"/>
+                    </TextBlock>
+                </Border>
+                <TextBox x:Name="Отряд" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" BorderBrush="Black"/>
+            </Grid>
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Border BorderBrush="Black" BorderThickness="1">
+                    <TextBlock  VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="Вид"/>
+                        <Run Text="&#10;Обязательное поле!" Foreground="Red"/>
+                    </TextBlock>
+                </Border>
+                <TextBox x:Name="Вид" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" BorderBrush="Black"/>
+            </Grid>
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Описание" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="1" Grid.Column="0" BorderBrush="Black"/>
+                <TextBox x:Name="Описание" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" BorderBrush="Black"/>
+            </Grid>
+            <Grid Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Среда обитания" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="1" Grid.Column="0" BorderBrush="Black"/>
+                <TextBox x:Name="Среда" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" BorderBrush="Black"/>
+            </Grid>
+            <Grid Grid.Row="6">
+                <Button x:Name="Upload" Content="Загрузить изображение" Click="UploadImage"/>
+            </Grid>
+            <Grid Grid.Row="7">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="Add" Content="Добавить" Grid.Column="0" Command="{Binding AddCommand}">
+                    <Button.CommandParameter>
+                        <MultiBinding Converter="{StaticResource MultiConverter}">
+                            <Binding Path="Text" ElementName="Группа"/>
+                            <Binding Path="Text" ElementName="Семейство"/>
+                            <Binding Path="Text" ElementName="Отряд"/>
+                            <Binding Path="Text" ElementName="Вид"/>
+                            <Binding Path="Text" ElementName="Описание"/>
+                            <Binding Path="Text" ElementName="Среда"/>
+                            <Binding Path="Tag" ElementName="Upload"/>
+                        </MultiBinding>
+                    </Button.CommandParameter>
+                </Button>
+                <Button x:Name="Edit" Content="Сохранить" Grid.Column="0" Command="{Binding EditCommand}">
+                    <Button.CommandParameter>
+                        <MultiBinding Converter="{StaticResource MultiConverter}">
+                            <Binding Path="Text" ElementName="Группа"/>
+                            <Binding Path="Text" ElementName="Семейство"/>
+                            <Binding Path="Text" ElementName="Отряд"/>
+                            <Binding Path="Text" ElementName="Вид"/>
+                            <Binding Path="Text" ElementName="Описание"/>
+                            <Binding Path="Text" ElementName="Среда"/>
+                            <Binding Path="Tag" ElementName="Upload"/>
+                        </MultiBinding>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="Отмена" Grid.Column="1" Click="CloseAdd"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
